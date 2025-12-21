@@ -10,7 +10,9 @@ type LoginResponse = {
   };
 };
 import {API_BASE} from '@env';
+import {useNavigate} from 'react-router-dom';
 export default function LoginWeb({navigation}: any) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,7 @@ export default function LoginWeb({navigation}: any) {
 
       // Redirect (replace later with router)
 
-      navigation.navigate('AdminDashboard');
+      navigate('/');
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
