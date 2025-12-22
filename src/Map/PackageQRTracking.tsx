@@ -24,10 +24,11 @@ const containerStyle = {
   height: '450px',
 };
 
-export default function PackageQRTracking() {
+export default function PackageQRTracking(props: any) {
   const token = localStorage.getItem(TOKEN_KEY);
   const mapRef = useRef<google.maps.Map | null>(null);
-
+  debugger;
+  const selectedTrackingId = props.trackingId || '';
   const [journeys, setJourneys] = useState<DestinationJourney[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -41,37 +42,27 @@ export default function PackageQRTracking() {
       // 🔹 Replace with real API call
       //   const res = await fetch(`${API_BASE}/scans/getJourney`);
       //   const data = await res.json();
-
-      const res = await fetch(`${API_BASE}/scans/getJourney`, {
-        headers: {Authorization: `Bearer ${token}`},
-      });
-      const json = await res.json();
-      if (json.success) setJourneys(json.data);
-
-      //   const data: DestinationJourney[] = [
-      //     {
-      //       destinationId: 'DELHI',
-      //       destinationLocation: {latitude: 28.7041, longitude: 77.1025},
-      //       scans: [
-      //         {latitude: 28.6139, longitude: 77.209},
-      //         {latitude: 28.5355, longitude: 77.391},
-      //       ],
-      //     },
-      //     {
-      //       destinationId: 'MUMBAI',
-      //       destinationLocation: {latitude: 19.076, longitude: 72.8777},
-      //       scans: [
-      //         {latitude: 23.0225, longitude: 72.5714},
-      //         {latitude: 21.1702, longitude: 72.8311},
-      //       ],
-      //     },
-      //   ];
-
-      setLoadingData(false);
+      let dashboardRes: any;
+      if (selectedTrackingId) {
+        dashboardRes = await fetch(
+          `${API_BASE}/scans/getJourney?trackingId=${selectedTrackingId}`,
+          {
+            headers: {Authorization: `Bearer ${token}`},
+          },
+        );
+        if (dashboardRes.success) setJourneys(dashboardRes.data);
+        setLoadingData(false);
+      } else {
+        dashboardRes = await fetch(`${API_BASE}/scans/getJourney`, {
+          headers: {Authorization: `Bearer ${token}`},
+        });
+        if (dashboardRes.success) setJourneys(dashboardRes.data);
+        setLoadingData(false);
+      }
     };
 
     loadJourneyData();
-  }, []);
+  }, [selectedTrackingId]);
 
   /* ================= BUILD PATHS (ONCE) ================= */
   const journeyPaths = useMemo(() => {

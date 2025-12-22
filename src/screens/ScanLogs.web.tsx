@@ -6,6 +6,7 @@ import ScanLogsTimeline from './ScanLogsTimeline.web';
 import {API_BASE} from '@env';
 import ZigZagScanView from './ZigZagScanView';
 import JourneyScanView from './JourneyScanView.web';
+import PackageQRTracking from '../Map/PackageQRTracking';
 const TOKEN_KEY = 'nta_token';
 
 interface PackageItem {
@@ -189,6 +190,7 @@ export default function ScanLogs({navigation}: any) {
             {selectedTrackingId}
           </div>
         )}
+        <PackageQRTracking trackingId={selectedTrackingId} />
         {loading && <p>Loading scan logs...</p>}
 
         {!loading && selectedTrackingId && scanLogs.length === 0 && (
