@@ -13,8 +13,8 @@ import {API_BASE} from '@env';
 import {useNavigate} from 'react-router-dom';
 export default function LoginWeb({navigation}: any) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('a');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 

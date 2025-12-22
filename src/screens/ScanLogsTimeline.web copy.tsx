@@ -64,116 +64,104 @@ export default function ScanLogsTimeline({trackingId}: ScanLogsTimelineProps) {
 
   /* ================= UI ================= */
   return (
-    <div className="max-w-5xl mx-auto mb-12">
+    <div className="max-w-4xl mx-auto mb-10">
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800">Scan History</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Tracking ID:{' '}
-          <span className="font-semibold text-gray-800">{trackingId}</span>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Scan History</h2>
+        <p className="text-sm text-gray-600">
+          Tracking ID: <span className="font-medium">{trackingId}</span>
         </p>
       </div>
 
       {/* Timeline */}
-      <div className="relative pl-10">
+      <div className="relative pl-8">
         {/* Vertical line */}
-        <div className="absolute left-4 top-0 bottom-0 w-px bg-gray-300" />
+        <div className="absolute left-3 top-0 bottom-0 w-px bg-gray-300" />
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {[...scanLogs]
             .sort(
               (a, b) =>
                 new Date(b.scan_datetime).getTime() -
                 new Date(a.scan_datetime).getTime(),
             )
-            .map((log, index) => {
-              const isLatest = index === 0;
+            .map((log, index) => (
+              <div key={log.scan_id} className="relative">
+                {/* Dot perfectly centered on line */}
+                <span
+                  className={`absolute left-3 top-4 w-3 h-3 rounded-full transform -translate-x-1/2 ${
+                    index === 0 ? 'bg-green-600' : 'bg-blue-600'
+                  }`}
+                />
 
-              return (
-                <div key={log.scan_id} className="relative">
-                  {/* Timeline dot */}
-                  <span
-                    className={`absolute left-4 top-6 w-4 h-4 rounded-full border-4 transform -translate-x-1/2 ${
-                      isLatest
-                        ? 'bg-green-600 border-green-200'
-                        : 'bg-blue-600 border-blue-200'
-                    }`}
-                  />
-
-                  {/* Card */}
-                  <div
-                    className={`ml-8 rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md ${
-                      isLatest
-                        ? 'border-green-300 bg-green-50/30'
-                        : 'border-gray-200'
-                    }`}>
-                    {/* Card Header */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${
-                            log.qr_type === 'OUTER'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-purple-100 text-purple-700'
-                          }`}>
-                          {log.qr_type} QR
-                        </span>
-
-                        {isLatest && (
-                          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
-                            Latest Scan
-                          </span>
-                        )}
-                      </div>
-
-                      <span className="text-xs text-gray-500">
-                        {new Date(log.scan_datetime).toLocaleString()}
+                {/* Card */}
+                <div className="bg-white rounded-lg shadow-sm border p-4 ml-6 hover:shadow-md transition">
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                          log.qr_type === 'OUTER'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-purple-100 text-purple-700'
+                        }`}>
+                        {log.qr_type}
+                      </span>
+                      <span className="font-medium text-gray-800">
+                        Package Scanned
                       </span>
                     </div>
 
-                    {/* Divider */}
-                    <div className="my-4 h-px bg-gray-200" />
+                    <span className="text-xs text-gray-500">
+                      {new Date(log.scan_datetime).toLocaleString()}
+                    </span>
+                  </div>
 
-                    {/* Card Body */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                      <InfoItem
-                        label="Scanned By"
-                        value={log.full_name ?? log.scanned_by}
-                      />
-                      <InfoItem label="Phone" value={log.scanned_phone} />
-                      <InfoItem
-                        label="Scan Mode"
-                        value={
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                              log.scan_mode === 'OFFLINE'
-                                ? 'bg-yellow-100 text-yellow-700'
-                                : 'bg-green-100 text-green-700'
-                            }`}>
-                            {log.scan_mode}
-                          </span>
-                        }
-                      />
-                      <InfoItem label="Device ID" value={log.device_id} />
-                      <InfoItem label="Latitude" value={log.latitude} />
-                      <InfoItem label="Longitude" value={log.longitude} />
+                  {/* Body */}
+                  <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm text-gray-600">
+                    <div>
+                      <span className="font-medium text-gray-700">
+                        Scanned By
+                      </span>
+                      <div>{log.full_name ?? log.scanned_by}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Phone</span>
+                      <div>{log.scanned_phone}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Mode</span>
+                      <span
+                        className={`ml-2 inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                          log.scan_mode === 'OFFLINE'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-green-100 text-green-700'
+                        }`}>
+                        {log.scan_mode}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">Device</span>
+                      <div>{log.device_id}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">
+                        Latitude
+                      </span>
+                      <div>{log.latitude}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-gray-700">
+                        Longitude
+                      </span>
+                      <div>{log.longitude}</div>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
         </div>
       </div>
-    </div>
-  );
-}
-function InfoItem({label, value}: {label: string; value: React.ReactNode}) {
-  return (
-    <div>
-      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-        {label}
-      </div>
-      <div className="mt-1 text-gray-800">{value}</div>
     </div>
   );
 }
