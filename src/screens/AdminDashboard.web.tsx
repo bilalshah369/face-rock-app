@@ -26,18 +26,52 @@ export default function Dashboard() {
   const [scanActivity, setScanActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   const headers = {Authorization: `Bearer ${token}`};
+
+  //   Promise.all([
+  //     fetch(`${API_BASE}/reports/summary`, {headers}).then(r => r.json()),
+  //     fetch(`${API_BASE}/reports/centre-wise`, {headers}).then(r => r.json()),
+  //     fetch(`${API_BASE}/reports/scan-activity`, {headers}).then(r => r.json()),
+  //   ])
+  //     .then(([s, c, a]) => {
+  //       setSummary(s.data);
+  //       setCentres(c.data);
+  //       setScanActivity(a.data);
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, []);
+  useEffect(() => {
+    if (!token) {
+      window.location.href = '/login';
+    }
+  }, []);
   useEffect(() => {
     const headers = {Authorization: `Bearer ${token}`};
 
+    const handleResponse = async (res: Response) => {
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem(TOKEN_KEY);
+        window.location.href = '/login';
+        throw new Error('Unauthorized');
+      }
+      return res.json();
+    };
+
     Promise.all([
-      fetch(`${API_BASE}/reports/summary`, {headers}).then(r => r.json()),
-      fetch(`${API_BASE}/reports/centre-wise`, {headers}).then(r => r.json()),
-      fetch(`${API_BASE}/reports/scan-activity`, {headers}).then(r => r.json()),
+      fetch(`${API_BASE}/reports/summary`, {headers}).then(handleResponse),
+      fetch(`${API_BASE}/reports/centre-wise`, {headers}).then(handleResponse),
+      fetch(`${API_BASE}/reports/scan-activity`, {headers}).then(
+        handleResponse,
+      ),
     ])
       .then(([s, c, a]) => {
         setSummary(s.data);
         setCentres(c.data);
         setScanActivity(a.data);
+      })
+      .catch(err => {
+        console.error('Dashboard API error:', err);
       })
       .finally(() => setLoading(false));
   }, []);
