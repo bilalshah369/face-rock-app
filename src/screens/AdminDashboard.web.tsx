@@ -16,11 +16,12 @@ import {API_BASE, REACT_APP_GOOGLE_MAPS_KEY} from '@env';
 import PackageRouteMap from '../Map/PackageRouteMap';
 import PackageJourneyMap from '../Map/PackageJourneyMap';
 import PackageQRTracking from '../Map/PackageQRTracking';
+import {useNavigate} from 'react-router-dom';
 const TOKEN_KEY = 'nta_token';
 
 export default function Dashboard() {
   const token = localStorage.getItem(TOKEN_KEY);
-
+  const nevigate = useNavigate();
   const [summary, setSummary] = useState<any>(null);
   const [centres, setCentres] = useState<any[]>([]);
   const [scanActivity, setScanActivity] = useState<any[]>([]);
@@ -52,7 +53,8 @@ export default function Dashboard() {
     const handleResponse = async (res: Response) => {
       if (res.status === 401 || res.status === 403) {
         localStorage.removeItem(TOKEN_KEY);
-        window.location.href = '/login';
+        //window.location.href = '/login';
+        nevigate('/login');
         throw new Error('Unauthorized');
       }
       return res.json();
